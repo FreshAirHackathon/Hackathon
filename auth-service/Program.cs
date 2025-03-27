@@ -14,6 +14,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//dev
 app.UseHttpsRedirection();
 
 var summaries = new[]
