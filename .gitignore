@@ -52,3 +52,36 @@ Thumbs.db
 *.sqlite3
 *.db
 pgdata
+# === DOTNET / VISUAL STUDIO ===
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build output
+**/bin/
+**/obj/
+*.cache
+*.dll
+*.exe
+*.pdb
+*.mdb
+
+# ASP.NET
+appsettings.*.json
+!appsettings.json
+
+# Rider
+.idea/
+
+# JetBrains Rider
+*.sln.iml
+
+# Others
+_ReSharper*/
+*.DotSettings.user
+*.csproj.user
+
+/.vs
+/auth-service/obj
