@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Prevencio.Domain.DTOs.Account;
-using Prevencio.Domain.Entities;
-using Prevencio.Domain.Interfaces;
+using Hackathon.AuthService.Interfaces;
+using Hackathon.AuthService.Entities;
+using Hackathon.AuthService.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +34,7 @@ namespace Hackathon.AuthService.Services
 				EmailConfirmed = user.EmailConfirmed
 			};
 		}
+
 		public async Task<IEnumerable<UserInfoDto>> GetAllUsersAsync()
 		{
 			var users = await userManager.Users

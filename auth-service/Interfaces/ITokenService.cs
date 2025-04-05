@@ -1,5 +1,5 @@
-
 using System.Collections.Generic;
+using Hackathon.AuthService.Entities;
 
 namespace Hackathon.AuthService.Interfaces
 {

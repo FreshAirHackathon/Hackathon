@@ -1,18 +1,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Prevencio.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
-using Prevencio.Domain.Interfaces;
-using Prevencio.Domain.DTOs.Account;
 using Microsoft.EntityFrameworkCore;
 using Hackathon.AuthService.Dtos;
-using Prevencio.Infrastructure.Extensions;
-using Prevencio.Infrastructure.Services;
+using Hackathon.AuthService.Interfaces;
+using Hackathon.AuthService.Entities;
+
 
 namespace Hackathon.AuthService.Controllers;
 

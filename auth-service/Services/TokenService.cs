@@ -3,6 +3,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using Hackathon.AuthService.Interfaces;
+using Hackathon.AuthService.Entities;
+
 using System.Text;
 
 public class TokenService : ITokenService
