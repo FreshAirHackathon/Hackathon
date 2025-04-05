@@ -5,13 +5,18 @@ using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var envPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".env");
 
-DotNetEnv.Env.Load();
+if (File.Exists(envPath))
+{
+    DotNetEnv.Env.Load(envPath);
+}
+else
+{
+    throw new Exception($".env file not found at: {envPath}");
+}
 
 var connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
-
-if (string.IsNullOrWhiteSpace(connectionString))
-    throw new Exception("Connection string is missing in environment variables.");
 
 //  PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -35,12 +40,10 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Подключение middleware
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 

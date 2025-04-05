@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using DotNetEnv;
 using System;
+using System.IO;
 
 namespace auth_service.Data
 {
@@ -10,7 +11,16 @@ namespace auth_service.Data
         public AppDbContext CreateDbContext(string[] args)
         {
             
-            DotNetEnv.Env.Load();
+            var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+
+            if (File.Exists(envPath))
+            {
+                DotNetEnv.Env.Load(envPath);
+            }
+            else
+            {
+                throw new Exception($".env file not found at: {envPath}");
+            }
 
             var connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
 
