@@ -1,16 +1,15 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Hackathon.AuthService.Data;
 
 #nullable disable
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace auth_service.Migrations
+namespace Hackathon.AuthService.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitWithAppUser : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,6 +33,8 @@ namespace auth_service.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
+                    RefreshToken = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    RefreshTokenExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -165,8 +166,8 @@ namespace auth_service.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "8dd1639c-b2d0-46c0-bc99-6a42e1a6029d", null, "User", "USER" },
-                    { "d0762514-06d7-4eae-8864-c9d4180a47bd", null, "Admin", "ADMIN" }
+                    { "307dc3b5-9a2d-4979-9ed5-b716a1674958", null, "Admin", "ADMIN" },
+                    { "956c2eb1-04d4-4e39-bc31-cf778d36eb18", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -10,7 +10,7 @@ namespace Hackathon.AuthService.Entities
 {
     public class AppUser : IdentityUser
     {
-        [MaxLength(50)] public required string RefreshToken { get; set; }
+        [MaxLength(500)] public required string RefreshToken { get; set; }
         public required DateTime RefreshTokenExpiryDate { get; set; }
     }
 }

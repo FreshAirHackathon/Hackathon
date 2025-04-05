@@ -4,10 +4,10 @@
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace auth_service.Migrations
+namespace Hackathon.AuthService.Migrations
 {
     /// <inheritdoc />
-    public partial class appuserinit : Migration
+    public partial class ExtendRefreshTokenLength : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,20 +15,20 @@ namespace auth_service.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "8dd1639c-b2d0-46c0-bc99-6a42e1a6029d");
+                keyValue: "307dc3b5-9a2d-4979-9ed5-b716a1674958");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "d0762514-06d7-4eae-8864-c9d4180a47bd");
+                keyValue: "956c2eb1-04d4-4e39-bc31-cf778d36eb18");
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "2d0f53ac-0c12-43b0-8f20-2c444877bcb4", null, "Admin", "ADMIN" },
-                    { "9fa24b59-f39d-4b0d-8238-bc16028b2fb4", null, "User", "USER" }
+                    { "665dc513-f368-4efc-bf56-896d1da30cb5", null, "Admin", "ADMIN" },
+                    { "a0ed447e-62fc-4f64-95f7-eb3dee213f5a", null, "User", "USER" }
                 });
         }
 
@@ -38,20 +38,20 @@ namespace auth_service.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "2d0f53ac-0c12-43b0-8f20-2c444877bcb4");
+                keyValue: "665dc513-f368-4efc-bf56-896d1da30cb5");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "9fa24b59-f39d-4b0d-8238-bc16028b2fb4");
+                keyValue: "a0ed447e-62fc-4f64-95f7-eb3dee213f5a");
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "8dd1639c-b2d0-46c0-bc99-6a42e1a6029d", null, "User", "USER" },
-                    { "d0762514-06d7-4eae-8864-c9d4180a47bd", null, "Admin", "ADMIN" }
+                    { "307dc3b5-9a2d-4979-9ed5-b716a1674958", null, "Admin", "ADMIN" },
+                    { "956c2eb1-04d4-4e39-bc31-cf778d36eb18", null, "User", "USER" }
                 });
         }
     }
