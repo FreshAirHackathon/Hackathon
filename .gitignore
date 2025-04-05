@@ -85,3 +85,8 @@ _ReSharper*/
 
 /.vs
 /auth-service/obj
+
+
+.env
+.env.*
+*.env
