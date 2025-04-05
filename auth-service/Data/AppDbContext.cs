@@ -2,16 +2,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-
-public class AppDbContext : IdentityDbContext<IdentityUser>
+namespace Hackathon.AuthService.Data
 {
-	public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
-	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	public class AppDbContext : IdentityDbContext<IdentityUser>
 	{
-		base.OnModelCreating(modelBuilder);
+		public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-		List<IdentityRole> roles = new List<IdentityRole>
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+
+			List<IdentityRole> roles = new List<IdentityRole>
 		{
 			new IdentityRole
 			{
@@ -24,6 +25,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
 				NormalizedName = "USER"
 			}
 		};
-		modelBuilder.Entity<IdentityRole>().HasData(roles);
+			modelBuilder.Entity<IdentityRole>().HasData(roles);
+		}
 	}
 }

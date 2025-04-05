@@ -4,7 +4,7 @@ using DotNetEnv;
 using System;
 using System.IO;
 
-namespace auth_service.Data
+namespace Hackathon.AuthService.Data
 {
     public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
