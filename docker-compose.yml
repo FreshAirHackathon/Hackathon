@@ -1,6 +1,22 @@
 version: '3.8'
 
 services:
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-api
+    ports:
+      - "5000:80"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=urbanradar;Username=postgres;Password=urban
+      - JWT__SecretKey=super-secret-key
+      - JWT__Issuer=auth-service
+      - JWT__Audience=auth-clients
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
   postgres:
     image: postgres:15
     container_name: auth-postgres
@@ -13,6 +29,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
 
 volumes:
   postgres_data:
+
+networks:
+  backend:

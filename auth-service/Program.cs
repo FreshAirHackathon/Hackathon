@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using DotNetEnv;
 using Hackathon.AuthService.Data;
 using Hackathon.AuthService.Entities;
 using Hackathon.AuthService.Interfaces;
@@ -10,45 +9,40 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Authentication;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
-var envPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".env");
+// Конфигурация из appsettings.json + env (если нужно)
+var configuration = builder.Configuration;
 
-if (File.Exists(envPath))
-{
-    DotNetEnv.Env.Load(envPath);
-}
-else
-{
-    throw new Exception($".env file not found at: {envPath}");
-}
+// Connection string из appsettings.json
+var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-var connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
+// JWT настройки
+var jwtKey = configuration["JWT:SecretKey"];
+var jwtIssuer = configuration["JWT:Issuer"];
+var jwtAudience = configuration["JWT:Audience"];
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-//  PostgreSQL
+// PostgreSQL + AppDbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Swagger + JWT
+// ===== Swagger + JWT Bearer =====
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Prevencio API", Version = "v1" });
-
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "AuthService API", Version = "v1" });
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Please enter a valid token",
+        Description = "JWT Authorization header using the Bearer scheme",
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",
-        Scheme = "bearer"
+        Scheme = "bearer",
+        BearerFormat = "JWT"
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -62,13 +56,12 @@ builder.Services.AddSwaggerGen(options =>
                     Id = "Bearer"
                 }
             },
-            new string[] { }
+            new string[] {}
         }
     });
 });
 
-
-// ====== CORS =======
+// ===== CORS =====
 var corsPolicy = "_allowAll";
 builder.Services.AddCors(options =>
 {
@@ -81,7 +74,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-// ====== Identity =======
+// ===== Identity =====
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
@@ -91,7 +84,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-// JWT 
+// ===== JWT =====
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -105,40 +98,28 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? "fallback-secret")),
         NameClaimType = ClaimTypes.NameIdentifier,
         RoleClaimType = ClaimTypes.Role
     };
-})
-.AddGoogle(options =>
-{
-    options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
-    options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET");
 });
+
 builder.Services.AddAuthorization();
 
-
-
-//  Infrastructure Services
+// ===== Custom сервисы =====
 builder.Services.AddScoped<IUserInfoService, userInfoService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-// Swagger 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+// ===== Build & Run =====
 var app = builder.Build();
-
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
 app.UseHttpsRedirection();
 app.UseCors(corsPolicy);
-
 app.UseAuthentication();
 app.UseAuthorization();
 

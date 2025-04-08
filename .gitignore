@@ -90,3 +90,4 @@ _ReSharper*/
 .env
 .env.*
 *.env
+.yml
