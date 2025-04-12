@@ -1,0 +1,84 @@
+import torch
+import torch.nn as nn
+from transformers import DistilBertTokenizer, DistilBertModel
+from sklearn.model_selection import train_test_split
+from torch.utils.data import Dataset, DataLoader
+
+texts = [
+    "Потерял ключи", "Сломался телефон", "Не могу войти в аккаунт", 
+    "Пролил воду на ноутбук", "Опоздал на автобус", "Заболела мама", 
+    "Интернет не работает", "Произошёл пожар", "Разрядился телефон", 
+    "Поругался с другом"
+]
+scores = [4, 6, 5, 7, 3, 9, 6, 10, 2, 5]  
+
+# === 2. Подготовка ===
+tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
+
+class ProblemDataset(Dataset):
+    def __init__(self, texts, scores):
+        self.texts = texts
+        self.scores = scores
+
+    def __len__(self):
+        return len(self.texts)
+
+    def __getitem__(self, idx):
+        encoding = tokenizer(self.texts[idx], return_tensors="pt", padding="max_length", truncation=True, max_length=64)
+        return {
+            "input_ids": encoding["input_ids"].squeeze(),
+            "attention_mask": encoding["attention_mask"].squeeze(),
+            "label": torch.tensor(self.scores[idx], dtype=torch.float)
+        }
+
+class SeverityModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.bert = DistilBertModel.from_pretrained("distilbert-base-uncased")
+        self.regressor = nn.Sequential(
+            nn.Linear(self.bert.config.hidden_size, 128),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(128, 1)
+        )
+
+    def forward(self, input_ids, attention_mask):
+        out = self.bert(input_ids=input_ids, attention_mask=attention_mask)
+        cls_token = out.last_hidden_state[:, 0]
+        return self.regressor(cls_token).squeeze()
+
+model = SeverityModel()
+optimizer = torch.optim.Adam(model.parameters(), lr=2e-5)
+loss_fn = nn.MSELoss()
+
+train_texts, val_texts, train_scores, val_scores = train_test_split(texts, scores, test_size=0.2)
+train_dataset = ProblemDataset(train_texts, train_scores)
+val_dataset = ProblemDataset(val_texts, val_scores)
+
+train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
+
+for epoch in range(3):
+    model.train()
+    total_loss = 0
+    for batch in train_loader:
+        optimizer.zero_grad()
+        preds = model(batch["input_ids"], batch["attention_mask"])
+        loss = loss_fn(preds, batch["label"])
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    print(f"Epoch {epoch+1} - Loss: {total_loss / len(train_loader):.4f}")
+
+
+def predict(text):
+    model.eval()
+    with torch.no_grad():
+        enc = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=64)
+        output = model(enc["input_ids"], enc["attention_mask"]).item()
+        return round(min(max(output, 1), 10), 1)
+
+
+while True:
+    user_input = input()
+    score = predict(user_input)
+    yield score
